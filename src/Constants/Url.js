@@ -1,0 +1,9 @@
+const APP_BASE = 'https://moviebucketapi.herokuapp.com/api';
+export const LOGIN = APP_BASE + '/v1/auth/email';
+export const REGISTER = APP_BASE + '/v1/register';
+export const ACTIVATE = APP_BASE + '/v1/activate';
+export const USER_FEED = APP_BASE + '/v1/feeds/user';
+export const POSTER_IMAGE_PREFIX = 'https://image.tmdb.org/t/p/w200';
+export const MOVIE_DETAILS_URL = 'https://api.themoviedb.org/3/movie';
+export const DUMMY_IMAGE_CARD =
+  'https://dummyimage.com/150x200/ccc/fff.jpg&text=Not+Available';

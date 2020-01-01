@@ -1,0 +1,12 @@
+export const PRIMARY = '#075F54';
+export const PRIMARY_VARIANT = '#128C7E';
+export const SECONDARY = '#25D366';
+export const SECONDARY_VARIANT = '#DCF8C6';
+export const BACKGROUND = '#ECE5DD';
+export const SURFACE = '#FFFFFF';
+export const ERROR = '#B00020';
+export const ON_PRIMARY = '#FFFFFF';
+export const ON_SECONDARY = '#FFFFFF';
+export const ON_BACKGROUND = '#1F1B24';
+export const ON_SURFACE = '#000000';
+export const ON_ERROR = '#FFFFFF';
