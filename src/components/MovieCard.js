@@ -4,7 +4,7 @@ import * as COLORS from '../Constants/Colors';
 import * as URLS from '../Constants/Url';
 import FastImage from 'react-native-fast-image';
 const SCREEN_WIDTH = Dimensions.get('screen').width;
-const CARD_WIDTH = SCREEN_WIDTH / 2.75;
+const CARD_WIDTH = SCREEN_WIDTH / 3;
 const CARD_HEIGHT = CARD_WIDTH * 1.5;
 class MovieCard extends Component {
   render() {
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH + 2 + 2,
     borderRadius: 2,
-    alignItems: 'center',
+    alignSelf: 'stretch',
     padding: 2,
   },
   poster: {
