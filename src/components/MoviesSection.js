@@ -1,12 +1,26 @@
 import React, {Component} from 'react';
-import {View, Text, FlatList, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import MovieCard from './MovieCard';
 class MoviesSection extends Component {
   renderMovieItem = ({item, index}) => {
-    const {type} = this.props;
-    return <MovieCard data={item} type={type} />;
+    const {type, onMovieCardPress} = this.props;
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          onMovieCardPress(item);
+        }}>
+        <MovieCard data={item} type={type} />
+      </TouchableOpacity>
+    );
   };
-  renderMoviesList = (data, type) => {
+  renderMoviesList = data => {
     return (
       <FlatList
         data={data}
@@ -18,11 +32,11 @@ class MoviesSection extends Component {
     );
   };
   render() {
-    const {title, data, type} = this.props;
+    const {title, data} = this.props;
     return (
       <View style={styles.list}>
         <Text style={styles.caption}>{title}</Text>
-        {this.renderMoviesList(data, type)}
+        {this.renderMoviesList(data)}
       </View>
     );
   }

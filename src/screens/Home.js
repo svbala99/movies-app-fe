@@ -68,6 +68,17 @@ class Home extends Component {
   };
 
   handleCarouselSlidePress = item => {
+    console.log(JSON.stringify(item));
+
+    this.props.navigation.navigate({
+      routeName: 'MovieDetails',
+      params: {movie: item},
+      key: `MovieDetails_` + String(item.id),
+    });
+  };
+
+  handleMovieCardPress = item => {
+    console.log(JSON.stringify(item));
     this.props.navigation.navigate({
       routeName: 'MovieDetails',
       params: {movie: item},
@@ -86,7 +97,14 @@ class Home extends Component {
         />
       );
     } else if (type === CONSTANTS.HORIZONTAL_LIST) {
-      return <MoviesSection title={title} data={data} type={'movies'} />;
+      return (
+        <MoviesSection
+          title={title}
+          data={data}
+          type={'movies'}
+          onMovieCardPress={this.handleMovieCardPress}
+        />
+      );
     } else {
       return null;
     }

@@ -97,7 +97,7 @@ class MovieDetails extends Component {
 
     return (
       <View style={styles.container}>
-        <View style={{paddingTop: 16}}>
+        <View style={{paddingTop: 4}}>
           <Text style={styles.items}>
             {releaseYear} {'\u2022'} {formattedRunTime}
           </Text>
@@ -159,16 +159,22 @@ class MovieDetails extends Component {
 
   render() {
     const {movie} = this.props.navigation.state.params;
-    const {cover_url, title} = movie;
+    const {backdrop_path, title} = movie;
     return (
       <ScrollView>
-        <FastImage source={{uri: cover_url}} style={styles.coverPic} />
+        <FastImage
+          source={{uri: URLS.BACKDROP_IMAGE_PREFIX + backdrop_path}}
+          style={styles.coverPic}
+        />
         <View style={styles.container}>
           <LinearGradient
             colors={['transparent', COLORS.SURFACE, COLORS.SURFACE]}
             style={styles.gradient}>
-            <Text style={styles.title}>{title}</Text>
+            <Text numberOfLines={2}> </Text>
           </LinearGradient>
+          <Text numberOfLines={2} style={styles.title}>
+            {title}
+          </Text>
           {this.state.movieDetails === null
             ? this.renderLoader()
             : this.renderDynamicContents()}
@@ -185,12 +191,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.SURFACE,
     paddingHorizontal: 4,
+    flex: 1,
   },
 
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    zIndex: 99,
     paddingHorizontal: 4,
   },
   items: {
@@ -207,9 +213,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.ON_BACKGROUND,
   },
   gradient: {
-    top: -20,
     position: 'absolute',
     width: CONSTANTS.SCREEN_WIDTH,
+    top: -10,
   },
   caption: {
     textAlign: 'justify',

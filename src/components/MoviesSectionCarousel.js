@@ -14,17 +14,8 @@ class MoviesSectionCarousel extends Component {
     this.setState({activeSlideIndex: slideIndex});
   };
 
-  handleMovieClick = id => {
-    return (
-      <View>
-        <Text>Hello</Text>
-      </View>
-    );
-  };
-
   renderMovieItem = ({item, index}) => {
-    const {cover_url, title} = item;
-    const {id} = item;
+    const {cover_url} = item;
     const {onCarouselSlidePress} = this.props;
     return (
       <TouchableOpacity
