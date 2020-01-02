@@ -109,6 +109,7 @@ class MovieDetails extends Component {
           <Text
             style={[styles.caption]}
             numberOfLines={this.state.overviewMaxLines}
+            onPress={() => {
               if (overviewMaxLines === 3) {
                 this.setState({overviewMaxLines: 1000});
               } else {
