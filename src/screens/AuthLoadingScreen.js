@@ -19,7 +19,7 @@ class AuthLoadingScreen extends Component {
   render() {
     return (
       <LinearGradient
-        colors={[COLORS.PRIMARY, COLORS.PRIMARY_VARIANT, COLORS.BACKGROUND]}
+        colors={[COLORS.SECONDARY_VARIANT, COLORS.SURFACE]}
         style={styles.loaderBG}>
         <Image
           source={require('../assets/main-icon.png')}
