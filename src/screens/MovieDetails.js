@@ -97,7 +97,7 @@ class MovieDetails extends Component {
 
     return (
       <View style={styles.container}>
-        <View>
+        <View style={{paddingTop: 16}}>
           <Text style={styles.items}>
             {releaseYear} {'\u2022'} {formattedRunTime}
           </Text>
@@ -109,7 +109,6 @@ class MovieDetails extends Component {
           <Text
             style={[styles.caption]}
             numberOfLines={this.state.overviewMaxLines}
-            onPress={() => {
               if (overviewMaxLines === 3) {
                 this.setState({overviewMaxLines: 1000});
               } else {
@@ -207,7 +206,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.ON_BACKGROUND,
   },
   gradient: {
-    top: -30,
+    top: -20,
     position: 'absolute',
     width: CONSTANTS.SCREEN_WIDTH,
   },
