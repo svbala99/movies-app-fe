@@ -10,11 +10,12 @@ import {
 import MovieCard from './MovieCard';
 class MoviesSection extends Component {
   renderMovieItem = ({item, index}) => {
-    const {type, onMovieCardPress} = this.props;
+    const {type, onCardPress} = this.props;
+
     return (
       <TouchableOpacity
         onPress={() => {
-          onMovieCardPress(item);
+          onCardPress(item);
         }}>
         <MovieCard data={item} type={type} />
       </TouchableOpacity>

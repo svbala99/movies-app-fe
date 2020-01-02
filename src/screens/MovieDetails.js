@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, ScrollView} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  StatusBar,
+  Image,
+} from 'react-native';
 import * as COLORS from '../Constants/Colors';
 import * as CONSTANTS from '../Constants/Constants';
 import * as URLS from '../Constants/Url';
@@ -8,7 +15,10 @@ import Axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import {ActivityIndicator, Avatar} from 'react-native-paper';
 import {Rating} from 'react-native-ratings';
-import MoviesSection from '../components/MoviesSection';
+import HorizontalList from '../components/HorizontalList';
+
+const coverPicHeight = CONSTANTS.SCREEN_HEIGHT / 3.5;
+
 class MovieDetails extends Component {
   state = {
     movieDetails: null,
@@ -66,8 +76,17 @@ class MovieDetails extends Component {
     );
   };
 
+  handleActorCardPress = item => {
+    this.props.navigation.navigate({
+      routeName: 'ActorDetails',
+      params: {actor: item},
+      key: `ActorDetails_` + String(item.id),
+    });
+  };
+
   renderDynamicContents = () => {
     const {
+      title,
       release_date,
       runtime,
       genres,
@@ -75,6 +94,7 @@ class MovieDetails extends Component {
       vote_average,
       vote_count,
       revenue,
+      poster_path,
     } = this.state.movieDetails;
     const {cast, crew, overviewMaxLines} = this.state;
     const releaseYear = new Date(release_date).getFullYear();
@@ -94,16 +114,43 @@ class MovieDetails extends Component {
         Math.abs(Number(revenue)) >= 1.0e3
         ? Math.round((Math.abs(Number(revenue)) / 1.0e3) * 100) / 100 + 'K'
         : Math.abs(Number(revenue));
-
     return (
       <View style={styles.container}>
-        <View style={{paddingTop: 4}}>
-          <Text style={styles.items}>
-            {releaseYear} {'\u2022'} {formattedRunTime}
-          </Text>
-        </View>
-        <View>
-          <Text style={[styles.items]}>{genresFormatted.join(', ')}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            height: coverPicHeight,
+            position: 'absolute',
+            top: -coverPicHeight / 4,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+          }}>
+          <View
+            style={[
+              {
+                flex: 1.5,
+              },
+              styles.exactCenter,
+            ]}>
+            <FastImage
+              source={{uri: URLS.BACKDROP_IMAGE_PREFIX + poster_path}}
+              style={styles.posterPic}
+            />
+          </View>
+          <View
+            style={{
+              flex: 2.5,
+              justifyContent: 'center',
+            }}>
+            <Text numberOfLines={2} style={styles.title}>
+              {title}
+            </Text>
+            <Text style={styles.items}>
+              {releaseYear} {'\u2022'} {formattedRunTime}
+            </Text>
+            <Text style={[styles.items]}>{genresFormatted.join(', ')}</Text>
+          </View>
         </View>
         <View>
           <Text
@@ -151,8 +198,19 @@ class MovieDetails extends Component {
             <Text style={{fontSize: 12}}>Box Office</Text>
           </View>
         </View>
-        <MoviesSection title={'Top-Billed Cast'} data={cast} type={'cast'} />
-        <MoviesSection title={'Crew'} data={crew} type={'crew'} />
+
+        <HorizontalList
+          title={'Top-Billed Cast'}
+          data={cast}
+          type={'cast'}
+          onCardPress={this.handleActorCardPress}
+        />
+        <HorizontalList
+          title={'Crew'}
+          data={crew}
+          type={'crew'}
+          onCardPress={this.handleActorCardPress}
+        />
       </View>
     );
   };
@@ -162,19 +220,16 @@ class MovieDetails extends Component {
     const {backdrop_path, title} = movie;
     return (
       <ScrollView>
-        <FastImage
+        <StatusBar translucent backgroundColor="transparent" />
+        <Image
           source={{uri: URLS.BACKDROP_IMAGE_PREFIX + backdrop_path}}
           style={styles.coverPic}
+          blurRadius={8}
         />
         <View style={styles.container}>
-          <LinearGradient
-            colors={['transparent', COLORS.SURFACE, COLORS.SURFACE]}
-            style={styles.gradient}>
-            <Text numberOfLines={2}> </Text>
-          </LinearGradient>
-          <Text numberOfLines={2} style={styles.title}>
+          {/* <Text numberOfLines={2} style={styles.title}>
             {title}
-          </Text>
+          </Text> */}
           {this.state.movieDetails === null
             ? this.renderLoader()
             : this.renderDynamicContents()}
@@ -195,7 +250,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
     paddingHorizontal: 4,
   },
@@ -215,12 +270,14 @@ const styles = StyleSheet.create({
   gradient: {
     position: 'absolute',
     width: CONSTANTS.SCREEN_WIDTH,
-    top: -10,
+    top: -24,
+    height: 24,
   },
   caption: {
     textAlign: 'justify',
     paddingVertical: 4,
     color: COLORS.ON_BACKGROUND,
+    marginTop: coverPicHeight * 0.75,
   },
   ratingCollection: {
     display: 'flex',
@@ -237,6 +294,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 2,
     backgroundColor: 'lightgray',
+  },
+  posterPic: {
+    width: CONSTANTS.SCREEN_WIDTH * (1.3 / 4),
+    height: coverPicHeight * 0.9,
+    borderRadius: 8,
+  },
+  exactCenter: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default MovieDetails;

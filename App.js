@@ -8,6 +8,7 @@ import EmailOTP from './src/screens/EmailOTP';
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
 import Main from './src/screens/Main';
 import MovieDetails from './src/screens/MovieDetails';
+import ActorDetails from './src/screens/ActorDetails';
 
 const AppStack = createStackNavigator({
   Main: {
@@ -21,6 +22,12 @@ const AppStack = createStackNavigator({
     navigationOptions: {
       header: null,
     },
+  },
+  ActorDetails: {
+    screen: ActorDetails,
+    // navigationOptions: {
+    //   header: null,
+    // },
   },
 });
 const AuthStack = createStackNavigator({

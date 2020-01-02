@@ -13,7 +13,7 @@ import * as COLORS from '../Constants/Colors';
 import axios from 'axios';
 import * as URL from '../Constants/Url';
 import * as CONSTANTS from '../Constants/Constants';
-import MoviesSection from '../components/MoviesSection';
+import HorizontalList from '../components/HorizontalList';
 import MoviesSectionCarousel from '../components/MoviesSectionCarousel';
 
 const RESULTS_LIMIT = 4;
@@ -68,8 +68,6 @@ class Home extends Component {
   };
 
   handleCarouselSlidePress = item => {
-    console.log(JSON.stringify(item));
-
     this.props.navigation.navigate({
       routeName: 'MovieDetails',
       params: {movie: item},
@@ -78,7 +76,6 @@ class Home extends Component {
   };
 
   handleMovieCardPress = item => {
-    console.log(JSON.stringify(item));
     this.props.navigation.navigate({
       routeName: 'MovieDetails',
       params: {movie: item},
@@ -98,11 +95,11 @@ class Home extends Component {
       );
     } else if (type === CONSTANTS.HORIZONTAL_LIST) {
       return (
-        <MoviesSection
+        <HorizontalList
           title={title}
           data={data}
           type={'movies'}
-          onMovieCardPress={this.handleMovieCardPress}
+          onCardPress={this.handleMovieCardPress}
         />
       );
     } else {

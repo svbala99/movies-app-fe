@@ -8,3 +8,5 @@ export const BACKDROP_IMAGE_PREFIX = 'https://image.tmdb.org/t/p/original';
 export const MOVIE_DETAILS_URL = 'https://api.themoviedb.org/3/movie';
 export const DUMMY_IMAGE_CARD =
   'https://dummyimage.com/150x200/ccc/fff.jpg&text=Not+Available';
+export const ACTOR_PROFILE_PATH = 'https://image.tmdb.org/t/p/w500';
+export const ACTOR_DETAILS_URL = 'https://api.themoviedb.org/3/person';
