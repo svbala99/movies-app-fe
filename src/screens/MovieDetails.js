@@ -6,6 +6,7 @@ import {
   ScrollView,
   StatusBar,
   Image,
+  TouchableHighlight,
 } from 'react-native';
 import * as COLORS from '../Constants/Colors';
 import * as CONSTANTS from '../Constants/Constants';
@@ -215,16 +216,30 @@ class MovieDetails extends Component {
     );
   };
 
+  handleBackArrowPress = () => {
+    this.props.navigation.pop(1);
+  };
+
   render() {
     const {movie} = this.props.navigation.state.params;
     const {backdrop_path, title} = movie;
     return (
       <ScrollView>
         <StatusBar translucent backgroundColor="transparent" />
+        <TouchableHighlight
+          style={styles.backArrowContainer}
+          onPress={this.handleBackArrowPress}>
+          <Avatar.Icon
+            size={40}
+            icon="arrow-left"
+            color={COLORS.SURFACE}
+            style={styles.backArrow}
+          />
+        </TouchableHighlight>
         <Image
           source={{uri: URLS.BACKDROP_IMAGE_PREFIX + backdrop_path}}
           style={styles.coverPic}
-          blurRadius={8}
+          blurRadius={0}
         />
         <View style={styles.container}>
           {/* <Text numberOfLines={2} style={styles.title}>
@@ -253,10 +268,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   items: {
     color: COLORS.ON_BACKGROUND,
     fontSize: 12,
+    padding: 4,
   },
   separator: {
     justifyContent: 'center',
@@ -299,10 +316,21 @@ const styles = StyleSheet.create({
     width: CONSTANTS.SCREEN_WIDTH * (1.3 / 4),
     height: coverPicHeight * 0.9,
     borderRadius: 8,
+    borderColor: COLORS.SURFACE,
+    borderWidth: 2,
   },
   exactCenter: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  backArrowContainer: {
+    position: 'absolute',
+    zIndex: 99,
+    top: coverPicHeight / 8,
+    left: 20,
+  },
+  backArrow: {
+    backgroundColor: '#FFFFFF66',
   },
 });
 export default MovieDetails;

@@ -25,9 +25,9 @@ const AppStack = createStackNavigator({
   },
   ActorDetails: {
     screen: ActorDetails,
-    // navigationOptions: {
-    //   header: null,
-    // },
+    navigationOptions: {
+      header: null,
+    },
   },
 });
 const AuthStack = createStackNavigator({

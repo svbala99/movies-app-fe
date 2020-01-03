@@ -145,6 +145,7 @@ class Home extends Component {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor={COLORS.PRIMARY} />
+
         <Topbar />
         {this.renderFeed()}
       </View>
