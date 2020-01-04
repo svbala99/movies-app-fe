@@ -1,67 +1,58 @@
 import * as React from 'react';
-import {
-  Appbar,
-  Avatar,
-  Menu,
-  Divider,
-  Provider,
-  Button,
-} from 'react-native-paper';
-import {StyleSheet, View} from 'react-native';
+import {Appbar, Avatar} from 'react-native-paper';
+import {StyleSheet, View, Text, Button} from 'react-native';
 import * as COLORS from '../Constants/Colors';
+import * as CONSTANTS from '../Constants/Constants';
+import Modal from 'react-native-modal';
+import {TouchableHighlight} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Topbar extends React.Component {
   state = {
-    menuVisible: false,
+    isModalVisible: false,
   };
-  openMenu = () => {
-    this.setState({menuVisible: true});
+  toggleModal = () => {
+    this.setState({isModalVisible: !this.state.isModalVisible});
   };
-  closeMenu = () => {
-    this.setState({menuVisible: false});
-  };
-  renderMenu = () => {
-    return (
-      <Provider>
-        <View
-          style={{
-            marginTop: -20,
-            marginLeft: 40,
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
-          <Menu
-            visible={this.state.menuVisible}
-            onDismiss={this.closeMenu}
-            anchor={
-              <Avatar.Icon
-                size={40}
-                icon="dots-horizontal"
-                style={{backgroundColor: null}}
-                onPress={this.openMenu}
-              />
-            }>
-            <Menu.Item onPress={() => {}} title="Log Out" />
-            <Menu.Item onPress={() => {}} title="Some other menu" />
-            <Divider />
-            <Menu.Item onPress={() => {}} title="Help" />
-          </Menu>
-        </View>
-      </Provider>
-    );
-  };
+
   render() {
-    const {title = ''} = this.props;
+    const {title = '', onLogoutPress} = this.props;
     return (
-      <Appbar.Header style={styles.appbarStyle}>
-        <Avatar.Icon size={40} icon="menu" style={{backgroundColor: null}} />
-        <Appbar.Content title="Movies App" />
-        <Appbar.Action
-          icon="dots-horizontal"
-          onPress={() => alert('Pressed label')}
-        />
-        {/* {this.renderMenu()} */}
-      </Appbar.Header>
+      <View>
+        <Appbar.Header style={styles.appbarStyle}>
+          <Avatar.Icon size={40} icon="menu" style={{backgroundColor: null}} />
+          <Appbar.Content title="Movies App" />
+          <Appbar.Action
+            icon="dots-horizontal"
+            color={CONSTANTS.SURFACE}
+            onPress={this.toggleModal}
+          />
+        </Appbar.Header>
+        <Modal
+          isVisible={this.state.isModalVisible}
+          onBackdropPress={() => this.setState({isModalVisible: false})}>
+          <View style={styles.modalStyle}>
+            <Text style={styles.modalText}>{'Do you want to logout?'}</Text>
+            <View style={styles.row}>
+              <TouchableHighlight style={styles.yesNo}>
+                <Text onPress={this.toggleModal} style={styles.modalText}>
+                  No
+                </Text>
+              </TouchableHighlight>
+              <TouchableHighlight style={styles.yesNo}>
+                <Text
+                  onPress={() => {
+                    this.toggleModal();
+                    onLogoutPress();
+                  }}
+                  style={styles.modalText}>
+                  Yes
+                </Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+      </View>
     );
   }
 }
@@ -69,9 +60,39 @@ export default class Topbar extends React.Component {
 const styles = StyleSheet.create({
   appbarStyle: {
     backgroundColor: COLORS.PRIMARY_VARIANT,
-    color: 'white',
-    paddingVertical: 30,
+  },
+  modalStyle: {
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+  },
+  modalText: {
+    color: COLORS.SURFACE,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  backArrow: {
+    backgroundColor: 'transparent',
+    marginLeft: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  column: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  yesNo: {
+    backgroundColor: '#128C7EDD',
+    marginHorizontal: CONSTANTS.SCREEN_WIDTH / 10,
+    marginVertical: 40,
+    borderRadius: 50,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
   },
 });

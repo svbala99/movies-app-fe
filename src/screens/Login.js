@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import {TextInput, Button, ActivityIndicator} from 'react-native-paper';
-import Axios from 'axios';
+import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import * as URLS from '../Constants/Url';
@@ -25,19 +25,30 @@ class Login extends Component {
   onPressLogin = async () => {
     try {
       this.setState({isLoggingIn: true});
-      const response = await Axios.post(URLS.LOGIN, {
-        email: this.state.email,
-        password: this.state.password,
-      });
-
-      this.setState({isLoggingIn: false});
-      const ACCESS_TOKEN = JSON.stringify(response.data.data.accessToken);
-      const MESSAGE = JSON.stringify(response.data.message);
-      await AsyncStorage.setItem('ACCESS_TOKEN', ACCESS_TOKEN);
-      this.props.navigation.navigate('App');
+      const response = await axios
+        .post(URLS.LOGIN, {
+          email: this.state.email,
+          password: this.state.password,
+        })
+        .then(async response => {
+          const ACCESS_TOKEN = JSON.stringify(response.data.data.accessToken);
+          await AsyncStorage.setItem('ACCESS_TOKEN', ACCESS_TOKEN);
+          this.setState({isLoggingIn: false, email: null, password: null});
+          this.props.navigation.navigate('App');
+        })
+        .catch(error => {
+          this.setState({isLoggingIn: false, password: null});
+          alert('Invalid credentials.. Try again!!!');
+          console.log('====================================');
+          console.log(JSON.stringify(error));
+          console.log('====================================');
+        });
     } catch (error) {
-      this.setState({isLoggingIn: false});
-      alert(JSON.stringify(error));
+      this.setState({isLoggingIn: false, password: null});
+      alert('Oops.. Something went wrong.. Try again!!!');
+      console.log('====================================');
+      console.log(JSON.stringify(error));
+      console.log('====================================');
     }
   };
   onPressRegister = () => {
@@ -54,6 +65,11 @@ class Login extends Component {
         <Text style={styles.header}>Welcome Back</Text>
 
         <TextInput
+          theme={{
+            colors: {
+              primary: COLORS.PRIMARY_VARIANT,
+            },
+          }}
           style={styles.input}
           label={'Email'}
           keyboardType="email-address"
@@ -64,6 +80,11 @@ class Login extends Component {
           }}
         />
         <TextInput
+          theme={{
+            colors: {
+              primary: COLORS.PRIMARY_VARIANT,
+            },
+          }}
           style={styles.input}
           label={'Password'}
           secureTextEntry={true}
@@ -96,16 +117,15 @@ class Login extends Component {
 
   renderLoader = () => {
     return (
-      <ImageBackground
-        source={require('../assets/loadingBG.jpg')}
-        style={styles.loaderBG}>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          flex: 1,
+        }}>
         <Text>Logging in...</Text>
-        <ActivityIndicator
-          animating={true}
-          size="large"
-          color={COLORS.PRIMARY}
-        />
-      </ImageBackground>
+        <ActivityIndicator size={'large'} color={COLORS.PRIMARY} />
+      </View>
     );
   };
 
@@ -113,10 +133,7 @@ class Login extends Component {
     const {isLoggingIn} = this.state;
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor={(COLORS, COLORS.ON_SURFACE)}
-          barStyle="light-content"
-        />
+        <StatusBar backgroundColor={COLORS.SURFACE} barStyle="dark-content" />
         {isLoggingIn ? this.renderLoader() : this.renderForm()}
       </View>
     );
@@ -125,7 +142,7 @@ class Login extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: COLORS.SURFACE,
     flex: 1,
     justifyContent: 'center',
   },
@@ -145,7 +162,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: 'center',
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: COLORS.SURFACE,
     paddingHorizontal: 50,
     paddingVertical: 15,
     marginTop: 20,
@@ -162,7 +179,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   input: {
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: COLORS.SURFACE,
   },
 });
 

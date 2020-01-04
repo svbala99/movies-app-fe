@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import {TextInput, Button, ActivityIndicator} from 'react-native-paper';
-import Axios from 'axios';
+import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import * as URLS from '../Constants/Url';
@@ -22,12 +22,6 @@ class Register extends Component {
     confirmPassword: 'pass',
     isLoggingIn: false,
   };
-
-  // componentDidMount = () => {
-  //   setTimeout(() => {
-  //     this.onPressRegister();
-  //   }, 200);
-  // };
   onPressRegister = async () => {
     try {
       this.setState({isLoggingIn: true});
@@ -36,24 +30,19 @@ class Register extends Component {
         return password === confirmPassword;
       });
       if (check) {
-        const response = await Axios.post(URLS.REGISTER, {
+        const response = await axios.post(URLS.REGISTER, {
           email: email,
           password: password,
           confirmPassword: confirmPassword,
         });
 
         this.setState({isLoggingIn: false});
-        // const TOTAL_RESPONSE = JSON.stringify(response.data);
-        // const MESSAGE = JSON.stringify(response.data);
-
         await AsyncStorage.setItem('email', email);
-
         this.props.navigation.push('EmailOTP');
       } else {
         alert('Passwords Do not match!!!');
       }
     } catch (error) {
-      this.setState({isLoggingIn: false});
       alert(error.response.data.error.message);
     }
   };
@@ -71,6 +60,11 @@ class Register extends Component {
         <Text style={styles.header}>Account Registration</Text>
 
         <TextInput
+          theme={{
+            colors: {
+              primary: COLORS.PRIMARY_VARIANT,
+            },
+          }}
           style={styles.input}
           label={'Email'}
           keyboardType="email-address"
@@ -81,6 +75,11 @@ class Register extends Component {
           }}
         />
         <TextInput
+          theme={{
+            colors: {
+              primary: COLORS.PRIMARY_VARIANT,
+            },
+          }}
           style={styles.input}
           label={'Password'}
           secureTextEntry={true}
@@ -91,6 +90,11 @@ class Register extends Component {
           }}
         />
         <TextInput
+          theme={{
+            colors: {
+              primary: COLORS.PRIMARY_VARIANT,
+            },
+          }}
           style={styles.input}
           label={'Re-Enter Password'}
           secureTextEntry={true}
@@ -123,18 +127,19 @@ class Register extends Component {
 
   renderLoader = () => {
     return (
-      <ImageBackground
+      <View
         source={require('../assets/account-creation.jpg')}
         style={styles.loaderBG}>
-        <Text style={{color: 'white', fontSize: 18, fontWeight: '800'}}>
+        <Text
+          style={{color: COLORS.ON_SURFACE, fontSize: 18, fontWeight: '800'}}>
           Creating a New account...
         </Text>
         <ActivityIndicator
           animating={true}
           size="large"
-          color={PRIMARY_COLOR}
+          color={COLORS.PRIMARY}
         />
-      </ImageBackground>
+      </View>
     );
   };
 
@@ -142,7 +147,7 @@ class Register extends Component {
     const {isLoggingIn} = this.state;
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="black" barStyle="light-content" />
+        <StatusBar backgroundColor={COLORS.SURFACE} barStyle="dark-content" />
         {isLoggingIn ? this.renderLoader() : this.renderForm()}
       </View>
     );
@@ -151,7 +156,7 @@ class Register extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: COLORS.SURFACE,
     flex: 1,
     justifyContent: 'center',
   },
@@ -190,7 +195,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   input: {
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: COLORS.SURFACE,
   },
 });
 

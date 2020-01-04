@@ -27,13 +27,9 @@ class MovieDetails extends Component {
     cast: null,
     crew: null,
     overviewMaxLines: 3,
+    similarMovies: null,
   };
 
-  static navigationOptions = {
-    headerStyle: {
-      backgroundColor: 'transparent',
-    },
-  };
   componentDidMount = () => {
     this.fetchMovieDetails();
   };
@@ -48,11 +44,16 @@ class MovieDetails extends Component {
       const castCrewResponse = await Axios.get(
         `${URLS.MOVIE_DETAILS_URL}/${movie.id}/credits?api_key=${CONSTANTS.TMDB_API_KEY}`,
       );
+      const similarMoviesResponse = await Axios.get(
+        `${URLS.MOVIE_DETAILS_URL}/${movie.id}/similar?api_key=${CONSTANTS.TMDB_API_KEY}`,
+      );
       const {cast, crew} = castCrewResponse.data;
+      const {results} = similarMoviesResponse.data;
       this.setState({
         movieDetails: movieDetailsResponse.data,
         cast: cast,
         crew: crew,
+        similarMovies: results,
         isLoading: false,
       });
     } catch (error) {
@@ -85,6 +86,14 @@ class MovieDetails extends Component {
     });
   };
 
+  handleMovieCardPress = item => {
+    this.props.navigation.navigate({
+      routeName: 'MovieDetails',
+      params: {movie: item},
+      key: `MovieDetails_` + String(item.id),
+    });
+  };
+
   renderDynamicContents = () => {
     const {
       title,
@@ -97,7 +106,7 @@ class MovieDetails extends Component {
       revenue,
       poster_path,
     } = this.state.movieDetails;
-    const {cast, crew, overviewMaxLines} = this.state;
+    const {cast, crew, similarMovies, overviewMaxLines} = this.state;
     const releaseYear = new Date(release_date).getFullYear();
 
     const runTimeHrs = Math.floor(runtime / 60);
@@ -135,7 +144,7 @@ class MovieDetails extends Component {
               styles.exactCenter,
             ]}>
             <FastImage
-              source={{uri: URLS.BACKDROP_IMAGE_PREFIX + poster_path}}
+              source={{uri: URLS.POSTER_IMAGE_PREFIX + poster_path}}
               style={styles.posterPic}
             />
           </View>
@@ -211,6 +220,13 @@ class MovieDetails extends Component {
           data={crew}
           type={'crew'}
           onCardPress={this.handleActorCardPress}
+        />
+
+        <HorizontalList
+          title={'Similar Movies'}
+          data={similarMovies}
+          type={'movies'}
+          onCardPress={this.handleMovieCardPress}
         />
       </View>
     );

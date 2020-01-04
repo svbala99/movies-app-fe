@@ -1,12 +1,5 @@
 import React, {Component} from 'react';
-import {
-  ImageBackground,
-  Text,
-  StyleSheet,
-  Image,
-  View,
-  StatusBar,
-} from 'react-native';
+import {Text, StyleSheet, Image, View, StatusBar} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import * as COLORS from '../Constants/Colors';
 import LinearGradient from 'react-native-linear-gradient';
@@ -26,7 +19,7 @@ class AuthLoadingScreen extends Component {
   render() {
     return (
       <LinearGradient
-        colors={[COLORS.SECONDARY_VARIANT, COLORS.SURFACE]}
+        colors={[COLORS.PRIMARY, COLORS.SURFACE, COLORS.BACKGROUND]}
         style={styles.loaderBG}>
         <StatusBar backgroundColor={COLORS.PRIMARY} />
 

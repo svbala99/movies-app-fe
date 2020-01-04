@@ -34,11 +34,6 @@ class Home extends Component {
     this.fetchFeed();
   };
 
-  onPressLogout = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate('Auth');
-  };
-
   fetchFeed = async () => {
     const {isLoading, results, currentPage, lastPage} = this.state;
 
@@ -49,7 +44,6 @@ class Home extends Component {
 
     let page = currentPage == -1 ? 1 : currentPage + 1;
     try {
-      isLoading;
       const {data: responseData} = await axios.get(
         URL.USER_FEED + `?limit=${RESULTS_LIMIT}&page=${page}`,
       );
@@ -65,6 +59,15 @@ class Home extends Component {
       this.setState({isLoading: false});
       console.log(error);
     }
+  };
+
+  handleLogoutPress = async () => {
+    this.setState({isLoggingOut: true});
+    await AsyncStorage.clear();
+    setTimeout(() => {
+      this.setState({isLoggingOut: false});
+      this.props.navigation.navigate('Auth');
+    }, 100);
   };
 
   handleCarouselSlidePress = item => {
@@ -126,6 +129,20 @@ class Home extends Component {
     );
   };
 
+  renderLogoutLoader = () => {
+    return (
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          flex: 1,
+        }}>
+        <Text>Logging Out...</Text>
+        <ActivityIndicator size={'large'} color={COLORS.PRIMARY} />
+      </View>
+    );
+  };
+
   renderFeed = () => {
     const {isLoading} = this.state;
     return (
@@ -142,12 +159,19 @@ class Home extends Component {
   };
 
   render() {
+    const {isLoggingOut} = this.state;
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor={COLORS.PRIMARY} />
 
-        <Topbar />
-        {this.renderFeed()}
+        {isLoggingOut ? (
+          this.renderLogoutLoader()
+        ) : (
+          <View>
+            <Topbar onLogoutPress={this.handleLogoutPress} />
+            {this.renderFeed()}
+          </View>
+        )}
       </View>
     );
   }
@@ -155,7 +179,7 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: COLORS.SURFACE,
     flex: 1,
   },
 });

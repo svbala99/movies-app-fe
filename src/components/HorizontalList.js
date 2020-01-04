@@ -11,12 +11,8 @@ import MovieCard from './MovieCard';
 class MoviesSection extends Component {
   renderMovieItem = ({item, index}) => {
     const {type, onCardPress} = this.props;
-
     return (
-      <TouchableOpacity
-        onPress={() => {
-          onCardPress(item);
-        }}>
+      <TouchableOpacity onPress={() => onCardPress(item)}>
         <MovieCard data={item} type={type} />
       </TouchableOpacity>
     );
@@ -36,7 +32,7 @@ class MoviesSection extends Component {
     const {title, data} = this.props;
     return (
       <View style={styles.list}>
-        <Text style={styles.caption}>{title}</Text>
+        {data.length ? <Text style={styles.caption}>{title}</Text> : null}
         {this.renderMoviesList(data)}
       </View>
     );
