@@ -43,6 +43,7 @@ class Register extends Component {
         alert('Passwords Do not match!!!');
       }
     } catch (error) {
+      this.setState({isLoggingIn: false});
       alert(error.response.data.error.message);
     }
   };

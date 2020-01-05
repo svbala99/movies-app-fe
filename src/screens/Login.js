@@ -38,16 +38,13 @@ class Login extends Component {
         })
         .catch(error => {
           this.setState({isLoggingIn: false, password: null});
-          alert('Invalid credentials.. Try again!!!');
-          console.log('====================================');
-          console.log(JSON.stringify(error));
-          console.log('====================================');
+          alert(error.response.data.error.message);
         });
     } catch (error) {
       this.setState({isLoggingIn: false, password: null});
       alert('Oops.. Something went wrong.. Try again!!!');
       console.log('====================================');
-      console.log(JSON.stringify(error));
+      console.log(error.response.data);
       console.log('====================================');
     }
   };

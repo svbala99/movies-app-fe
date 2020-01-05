@@ -6,12 +6,12 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  ImageBackground,
+  Keyboard,
 } from 'react-native';
 import {ActivityIndicator, Avatar} from 'react-native-paper';
+import {SearchBar} from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import Topbar from '../components/Topbar';
-import FastImage from 'react-native-fast-image';
 
 import * as COLORS from '../Constants/Colors';
 import * as CONSTANTS from '../Constants/Constants';
@@ -26,39 +26,35 @@ class Search extends Component {
     this.state = {
       isLoading: false,
       results: [],
-      currentPage: -1,
-      lastPage: 0,
+      currentPage: 1,
+      isEndReached: false,
       isLoggingOut: false,
+      query: '',
     };
   }
 
-  componentDidMount = () => {
-    this.fetchFeed();
-  };
-
   fetchFeed = async () => {
-    const {isLoading, results, currentPage, lastPage} = this.state;
-
-    if ((currentPage != -1 && currentPage === lastPage) || isLoading) {
-      return null;
+    const {
+      isLoading,
+      currentPage,
+      query: queryInput,
+      isEndReached,
+    } = this.state;
+    if (isEndReached || isLoading || queryInput === '') {
+      return;
     }
-    this.setState({isLoading: true});
-
-    let page = currentPage == -1 ? 1 : currentPage + 1;
     try {
       const {data: responseData} = await axios.get(
-        `${URLS.TRENDING}&page=${page}`,
+        `${URLS.SEARCH_MOVIES}&query=${queryInput}&page=${currentPage}`,
       );
-      const updatedResults = [...results, ...responseData.results];
-      let updatedLastPage = responseData.total_pages;
+      const updatedResults = responseData.results;
+      let {total_pages, page} = responseData;
       this.setState({
-        isLoading: false,
         results: updatedResults,
-        currentPage: page,
-        lastPage: updatedLastPage,
+        currentPage: currentPage + 1,
+        isEndReached: page >= total_pages,
       });
     } catch (error) {
-      this.setState({isLoading: false});
       console.log(error);
     }
   };
@@ -107,17 +103,45 @@ class Search extends Component {
   };
 
   renderFeed = () => {
-    const {isLoading, results} = this.state;
+    const {isLoading, results, query} = this.state;
     return (
-      <FlatList
-        data={results}
-        renderItem={this.renderFeedItem}
-        keyExtractor={(item, index) => index.toString()}
-        onEndReachedThreshold={0.5}
-        onEndReached={this.fetchFeed}
-        ListFooterComponent={this.renderLoader}
-        extraData={{isLoading}}
-      />
+      <View>
+        <SearchBar
+          placeholder="Search movies"
+          onChangeText={inputText => {
+            this.setState(
+              {
+                query: inputText,
+                currentPage: 1,
+                results: [],
+                isEndReached: false,
+              },
+              () => {
+                this.fetchFeed();
+              },
+            );
+          }}
+          value={query}
+          containerStyle={{
+            backgroundColor: COLORS.SURFACE,
+            borderBottomColor: 'transparent',
+            borderTopColor: 'transparent',
+          }}
+          inputContainerStyle={{backgroundColor: '#e5e5e5'}}
+        />
+        <FlatList
+          data={query.trim() === '' ? [] : results}
+          renderItem={this.renderFeedItem}
+          keyExtractor={(item, index) => index.toString()}
+          onEndReachedThreshold={0.5}
+          // onEndReached={this.fetchFeed(query)}
+          ListFooterComponent={this.renderLoader}
+          extraData={{isLoading}}
+          onScrollBeginDrag={() => {
+            Keyboard.dismiss();
+          }}
+        />
+      </View>
     );
   };
 
@@ -145,9 +169,11 @@ class Search extends Component {
           <Text numberOfLines={2} style={{fontWeight: 'bold'}}>
             {item.title}
           </Text>
-          <Text style={{fontSize: 12}}>{`${
-            item.release_date.split('-')[0]
-          } | ${item.original_language.toUpperCase()}`}</Text>
+          {item.release_date ? (
+            <Text style={{fontSize: 12}}>{`${
+              item.release_date.split('-')[0]
+            } | ${item.original_language.toUpperCase()}`}</Text>
+          ) : null}
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Avatar.Icon
               size={24}
@@ -194,6 +220,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.SURFACE,
     flex: 1,
+  },
+  input: {
+    marginHorizontal: 8,
+    marginVertical: 4,
   },
 });
 

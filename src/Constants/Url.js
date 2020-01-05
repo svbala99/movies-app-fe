@@ -13,3 +13,5 @@ export const ACTOR_PROFILE_PATH = 'https://image.tmdb.org/t/p/w200';
 export const ACTOR_DETAILS_URL = 'https://api.themoviedb.org/3/person';
 export const TRENDING =
   'https://api.themoviedb.org/3/trending/movie/day?api_key=85074de3cb4c16234b82a6e22b5e14e2';
+export const SEARCH_MOVIES =
+  'https://api.themoviedb.org/3/search/movie?api_key=85074de3cb4c16234b82a6e22b5e14e2';
