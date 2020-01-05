@@ -86,14 +86,6 @@ class Trending extends Component {
     );
   };
 
-  handleMovieCardPress = item => {
-    this.props.navigation.navigate({
-      routeName: 'MovieDetails',
-      params: {movie: item},
-      key: `MovieDetails_` + String(item.id),
-    });
-  };
-
   renderLoader = () => {
     const {isLoading, results} = this.state;
     const containerHeight =

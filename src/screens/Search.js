@@ -30,8 +30,18 @@ class Search extends Component {
       isEndReached: false,
       isLoggingOut: false,
       query: '',
+      isNoResults: false,
     };
   }
+
+  componentWillUnmount = () => {
+    this.setState({
+      results: [],
+      query: '',
+      currentPage: 1,
+      isEndReached: false,
+    });
+  };
 
   fetchFeed = async () => {
     const {
@@ -39,6 +49,8 @@ class Search extends Component {
       currentPage,
       query: queryInput,
       isEndReached,
+      isNoResults,
+      results,
     } = this.state;
     if (isEndReached || isLoading || queryInput === '') {
       return;
@@ -48,9 +60,15 @@ class Search extends Component {
         `${URLS.SEARCH_MOVIES}&query=${queryInput}&page=${currentPage}`,
       );
       const updatedResults = responseData.results;
+      if (updatedResults.length === 0) {
+        this.setState({isNoResults: true});
+        return;
+      }
+
       let {total_pages, page} = responseData;
+
       this.setState({
-        results: updatedResults,
+        results: page == 1 ? updatedResults : [...results, ...updatedResults],
         currentPage: currentPage + 1,
         isEndReached: page >= total_pages,
       });
@@ -102,11 +120,36 @@ class Search extends Component {
     );
   };
 
+  renderNoResults = () => {
+    const {isNoResults} = this.state;
+    return (
+      isNoResults && (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 100,
+          }}>
+          <Text style={{color: COLORS.ERROR}}>No results found...</Text>
+        </View>
+      )
+    );
+  };
+
   renderFeed = () => {
     const {isLoading, results, query} = this.state;
     return (
       <View>
         <SearchBar
+          onClear={() => {
+            this.setState({
+              results: [],
+              query: '',
+              currentPage: 1,
+              isEndReached: false,
+              isNoResults: false,
+            });
+          }}
           placeholder="Search movies"
           onChangeText={inputText => {
             this.setState(
@@ -115,6 +158,7 @@ class Search extends Component {
                 currentPage: 1,
                 results: [],
                 isEndReached: false,
+                isNoResults: false,
               },
               () => {
                 this.fetchFeed();
@@ -129,12 +173,15 @@ class Search extends Component {
           }}
           inputContainerStyle={{backgroundColor: '#e5e5e5'}}
         />
+        {this.renderNoResults()}
+
         <FlatList
+          style={{marginBottom: 250}}
           data={query.trim() === '' ? [] : results}
           renderItem={this.renderFeedItem}
           keyExtractor={(item, index) => index.toString()}
           onEndReachedThreshold={0.5}
-          // onEndReached={this.fetchFeed(query)}
+          onEndReached={this.fetchFeed}
           ListFooterComponent={this.renderLoader}
           extraData={{isLoading}}
           onScrollBeginDrag={() => {
@@ -145,19 +192,30 @@ class Search extends Component {
     );
   };
 
+  handleMovieCardPress = item => {
+    if (item.backdrop_path == null) {
+      alert('No Further details available');
+      return;
+    }
+    this.props.navigation.navigate({
+      routeName: 'MovieDetails',
+      params: {movie: item},
+      key: `MovieDetails_` + String(item.id),
+    });
+  };
+
   renderFeedItem = ({item, index}) => {
     const backDropUrl = URLS.BACKDROP_IMAGE_LOWRES + item.backdrop_path;
     return (
-      <View
+      <TouchableOpacity
+        onPress={() => this.handleMovieCardPress(item)}
         style={{
           flexDirection: 'row',
           borderBottomColor: COLORS.BACKGROUND,
           borderBottomWidth: 0.5,
         }}>
         <View style={{flex: 1}}>
-          <TouchableOpacity>
-            <MovieCard data={item} type={'movies_trending'} />
-          </TouchableOpacity>
+          <MovieCard data={item} type={'movies_trending'} />
         </View>
         <View
           style={{
@@ -184,16 +242,8 @@ class Search extends Component {
             <Text style={{fontSize: 10}}>{item.vote_average}</Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
-  };
-
-  handleMovieCardPress = item => {
-    this.props.navigation.navigate({
-      routeName: 'MovieDetails',
-      params: {movie: item},
-      key: `MovieDetails_` + String(item.id),
-    });
   };
 
   render() {

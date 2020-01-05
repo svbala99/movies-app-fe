@@ -6,14 +6,14 @@ import {
   ScrollView,
   StatusBar,
   Image,
+  TouchableOpacity,
   TouchableHighlight,
 } from 'react-native';
 import * as COLORS from '../Constants/Colors';
 import * as CONSTANTS from '../Constants/Constants';
 import * as URLS from '../Constants/Url';
 import FastImage from 'react-native-fast-image';
-import Axios from 'axios';
-import LinearGradient from 'react-native-linear-gradient';
+import axios from 'axios';
 import {ActivityIndicator, Avatar} from 'react-native-paper';
 import {Rating} from 'react-native-ratings';
 import HorizontalList from '../components/HorizontalList';
@@ -28,6 +28,7 @@ class MovieDetails extends Component {
     crew: null,
     overviewMaxLines: 3,
     similarMovies: null,
+    isFavorite: false,
   };
 
   componentDidMount = () => {
@@ -38,27 +39,37 @@ class MovieDetails extends Component {
     try {
       const {movie} = this.props.navigation.state.params;
       this.setState({isLoading: true});
-      const movieDetailsResponse = await Axios.get(
+      const movieDetailsResponse = await axios.get(
         `${URLS.MOVIE_DETAILS_URL}/${movie.id}?api_key=${CONSTANTS.TMDB_API_KEY}`,
       );
-      const castCrewResponse = await Axios.get(
+      const castCrewResponse = await axios.get(
         `${URLS.MOVIE_DETAILS_URL}/${movie.id}/credits?api_key=${CONSTANTS.TMDB_API_KEY}`,
       );
-      const similarMoviesResponse = await Axios.get(
+
+      const similarMoviesResponse = await axios.get(
         `${URLS.MOVIE_DETAILS_URL}/${movie.id}/similar?api_key=${CONSTANTS.TMDB_API_KEY}`,
       );
+      const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZGVkMjNmYTEwZGQ0ZTZmMDE1NGI3ZjAiLCJpYXQiOjE1NzgyMjI1ODgsImV4cCI6MTU3ODgyNzM4OH0.UZ_NS7VIYbbrRHuS8w-pt02l7uyh7AN0IY0X1AOp4Lc';
+      const favoriteMovieResponse = await axios({
+        method: 'get',
+        url: `${URLS.CHECK_FAVORITE_MOVIE}` + movie.id,
+        headers: {Authorization: `Bearer ${token}`},
+      });
       const {cast, crew} = castCrewResponse.data;
       const {results} = similarMoviesResponse.data;
+      const isFavorite = favoriteMovieResponse.data.data.id ? true : false;
       this.setState({
         movieDetails: movieDetailsResponse.data,
         cast: cast,
         crew: crew,
         similarMovies: results,
         isLoading: false,
+        isFavorite: isFavorite,
       });
     } catch (error) {
       this.setState({isLoading: false});
-      console.log(error);
+      console.log(error.response.data);
     }
   };
   renderLoader = () => {
@@ -94,6 +105,8 @@ class MovieDetails extends Component {
     });
   };
 
+  handleHeartPressed = () => {};
+
   renderDynamicContents = () => {
     const {
       title,
@@ -106,7 +119,13 @@ class MovieDetails extends Component {
       revenue,
       poster_path,
     } = this.state.movieDetails;
-    const {cast, crew, similarMovies, overviewMaxLines} = this.state;
+    const {
+      cast,
+      crew,
+      similarMovies,
+      overviewMaxLines,
+      isFavorite,
+    } = this.state;
     const releaseYear = new Date(release_date).getFullYear();
 
     const runTimeHrs = Math.floor(runtime / 60);
@@ -151,7 +170,7 @@ class MovieDetails extends Component {
           <View
             style={{
               flex: 2.5,
-              justifyContent: 'center',
+              marginTop: coverPicHeight / 4,
             }}>
             <Text numberOfLines={2} style={styles.title}>
               {title}
@@ -160,6 +179,16 @@ class MovieDetails extends Component {
               {releaseYear} {'\u2022'} {formattedRunTime}
             </Text>
             <Text style={[styles.items]}>{genresFormatted.join(', ')}</Text>
+            <TouchableOpacity
+              onPress={this.handleHeartPressed}
+              style={{backgroundColor: COLORS.SURFACE}}>
+              <Avatar.Icon
+                size={40}
+                icon={isFavorite ? 'heart' : 'heart-outline'}
+                color={isFavorite ? '#FF0022' : 'grey'}
+                style={{backgroundColor: COLORS.SURFACE}}
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <View>
@@ -239,6 +268,7 @@ class MovieDetails extends Component {
   render() {
     const {movie} = this.props.navigation.state.params;
     const {backdrop_path, title} = movie;
+
     return (
       <ScrollView>
         <StatusBar translucent backgroundColor="transparent" />

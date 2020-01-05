@@ -5,6 +5,7 @@ import * as COLORS from '../Constants/Colors';
 import Home from './Home';
 import Trending from './Trending';
 import Search from './Search';
+import Favorites from './Favorites';
 
 class Main extends Component {
   state = {
@@ -25,6 +26,11 @@ class Main extends Component {
         title: 'Search',
         icon: 'magnify',
       },
+      {
+        key: 'favorites',
+        title: 'Favorites',
+        icon: 'heart',
+      },
     ],
   };
   _handleIndexChange = index => this.setState({index});
@@ -40,6 +46,9 @@ class Main extends Component {
       }
       case 'search': {
         return <Search navigation={navigation} />;
+      }
+      case 'favorites': {
+        return <Favorites navigation={navigation} />;
       }
       default: {
         return null;

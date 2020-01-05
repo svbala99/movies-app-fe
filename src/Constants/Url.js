@@ -15,3 +15,6 @@ export const TRENDING =
   'https://api.themoviedb.org/3/trending/movie/day?api_key=85074de3cb4c16234b82a6e22b5e14e2';
 export const SEARCH_MOVIES =
   'https://api.themoviedb.org/3/search/movie?api_key=85074de3cb4c16234b82a6e22b5e14e2';
+
+export const CHECK_FAVORITE_MOVIE =
+  APP_BASE + '/v1/favorites/check/movies?movie_id=';
